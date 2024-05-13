@@ -1,0 +1,375 @@
+---
+title: "Untitled"
+output: html_document
+date: "2024-05-08"
+---
+
+
+
+
+
+
+
+
+```{r}
+setwd("C:/Users/mf767/OneDrive - University of Bath/Leaf_analysis")
+folder_images_path <- "C:/Users/mf767/OneDrive - University of Bath/Leaf_analysis"
+
+
+png_files <- list.files(folder_images_path, pattern = "\\.png$", full.names = TRUE)
+image_list <- list()
+for (file in png_files){
+  file_name <- tools::file_path_sans_ext(basename(file))
+  img <- readImage(file)
+  image_list[[file_name]] <- img
+}
+
+
+# Initialize an empty list to store the new dataframes
+leaf_list <- list()
+column_averages <- list()
+# Loop through each image in the image_list
+for (i in seq_along(image_list)) {
+  # Extract R, G, and B channels
+  R <- image_list[[i]][,,1]
+  G <- image_list[[i]][,,2]
+  B <- image_list[[i]][,,3]
+  
+  # Create dataframes for R, G, and B channels
+  R_df <- data.frame(value = c(R * 255))
+  G_df <- data.frame(value = c(G * 255))
+  B_df <- data.frame(value = c(B * 255))
+  
+  # Combine R, G, and B dataframes into RGB dataframe
+  RGB <- cbind(R_df, G_df, B_df)
+  colnames(RGB) <- c("R", "G", "B")
+  
+  # Remove rows with all zeros
+  no_zero <- RGB[rowSums(RGB[c("R", "G", "B")]) != 0, ]
+     no_zero <- no_zero[rowSums(no_zero[,c("R", "G", "B")]) < 750, ]
+  
+  # Assign modified name for the new dataframe
+  original_name <- names(image_list)[i]
+  new_name <- paste0(original_name, "_RGB")
+  assign(new_name, no_zero)
+  # Add the new dataframe to the list
+  
+  
+
+
+}
+```
+
+
+
+
+```{r}
+   test <- MFC3_RGB[rowSums(MFC3_RGB[,c("R", "G", "B")]) < 750, ]
+```
+
+
+```{r}
+setwd("C:/Users/mf767/OneDrive - University of Bath/Leaf_images")
+Green <-readImage("H.png")
+Brown <-readImage("S3.png")
+green_R <-Green[,,1]
+green_G <-Green[,,2]
+green_B <-Green[,,3]
+
+green_R_df <-data.frame( value = c(green_R*255))
+green_G_df <-data.frame( value = c(green_G*255))
+green_B_df <-data.frame( value = c(green_B*255))
+
+green_RGB <- cbind(green_R_df, green_G_df, green_B_df)
+colnames(green_RGB)<- c("R","G","B")
+
+brown_R <-Brown[,,1]
+brown_G <-Brown[,,2]
+brown_B <-Brown[,,3]
+
+brown_R_df <-data.frame( value = c(brown_R*255))
+brown_G_df <-data.frame( value = c(brown_G*255))
+brown_B_df <-data.frame( value = c(brown_B*255))
+
+brown_RGB <- cbind(brown_R_df, brown_G_df, brown_B_df)
+colnames(brown_RGB)<- c("R","G","B")
+
+
+```
+
+
+
+
+
+
+```{r}
+euclidean_distance <- function(set1, set2) {
+  sqrt(rowSums((set1 - set2)^2))
+}
+```
+
+
+```{r}
+green_mat <-as.matrix(green_RGB)
+brown_mat <-as.matrix(brown_RGB)
+```
+
+
+```{r}
+calculate_category_percentage <- function(categories, category_name) {
+  # Calculate total number of rows
+  total_rows <- length(categories)
+  
+  # Calculate number of rows in the specified category
+  category_rows <- sum(categories == category_name, na.rm = TRUE)
+  
+  # Calculate percentage of rows in the specified category
+  percentage <- (category_rows / total_rows) * 100
+  
+  return(percentage)
+}
+```
+
+```{r}
+30874
+EV1_RGB <- as.matrix(EV1_RGB)
+n <- nrow(EV1_RGB)
+EV1_dist_brown <- euclidean_distance(EV1_RGB[1:n,], brown_mat[1:n,])
+EV1_dist_green <- euclidean_distance(EV1_RGB[1:n,], green_mat[1:n,])
+
+EV1_colour <- ifelse(EV1_dist_brown > EV1_dist_green, "green", "brown")
+
+# Print the categories
+
+EV1_brown <- calculate_category_percentage(EV1_colour, "brown")
+
+
+
+EV2_RGB <- as.matrix(EV2_RGB)
+n <- nrow(EV2_RGB)
+EV2_dist_brown <- euclidean_distance(EV2_RGB[1:n,], brown_mat[1:n,])
+EV2_dist_green <- euclidean_distance(EV2_RGB[1:n,], green_mat[1:n,])
+
+EV2_colour <- ifelse(EV2_dist_brown > EV2_dist_green, "green", "brown")
+
+# Print the categories
+
+EV2_brown <- calculate_category_percentage(EV2_colour, "brown")
+
+
+
+
+
+
+EV3_RGB <- as.matrix(EV3_RGB)
+n <- nrow(EV3_RGB)
+EV3_dist_brown <- euclidean_distance(EV3_RGB[1:n,], brown_mat[1:n,])
+EV3_dist_green <- euclidean_distance(EV3_RGB[1:n,], green_mat[1:n,])
+
+EV3_colour <- ifelse(EV3_dist_brown > EV3_dist_green, "green", "brown")
+
+# Print the categories
+
+EV3_brown <- calculate_category_percentage(EV3_colour, "brown")
+
+
+EV4_RGB <- as.matrix(EV4_RGB)
+n <- nrow(EV4_RGB)
+EV4_dist_brown <- euclidean_distance(EV4_RGB[1:n,], brown_mat[1:n,])
+EV4_dist_green <- euclidean_distance(EV4_RGB[1:n,], green_mat[1:n,])
+
+EV4_colour <- ifelse(EV4_dist_brown > EV4_dist_green, "green", "brown")
+
+# Print the categories
+
+EV4_brown <- calculate_category_percentage(EV4_colour, "brown")
+
+
+
+
+
+
+
+
+C1_RGB <- as.matrix(C1_RGB)
+n <- nrow(C1_RGB)
+C1_dist_brown <- euclidean_distance(C1_RGB[1:n,], brown_mat[1:n,])
+C1_dist_green <- euclidean_distance(C1_RGB[1:n,], green_mat[1:n,])
+
+C1_colour <- ifelse(C1_dist_brown > C1_dist_green, "green", "brown")
+
+# Print the categories
+
+C1_brown <- calculate_category_percentage(C1_colour, "brown")
+
+
+
+C2_RGB <- as.matrix(C2_RGB)
+n <- nrow(C2_RGB)
+C2_dist_brown <- euclidean_distance(C2_RGB[1:n,], brown_mat[1:n,])
+C2_dist_green <- euclidean_distance(C2_RGB[1:n,], green_mat[1:n,])
+
+C2_colour <- ifelse(C2_dist_brown > C2_dist_green, "green", "brown")
+
+# Print the categories
+
+C2_brown <- calculate_category_percentage(C2_colour, "brown")
+
+
+C3_RGB <- as.matrix(C3_RGB)
+n <- nrow(C3_RGB)
+C3_dist_brown <- euclidean_distance(C3_RGB[1:n,], brown_mat[1:n,])
+C3_dist_green <- euclidean_distance(C3_RGB[1:n,], green_mat[1:n,])
+
+C3_colour <- ifelse(C3_dist_brown > C3_dist_green, "green", "brown")
+
+# Print the categories
+
+C3_brown <- calculate_category_percentage(C3_colour, "brown")
+
+C4_RGB <- as.matrix(C4_RGB)
+n <- nrow(C4_RGB)
+C4_dist_brown <- euclidean_distance(C4_RGB[1:n,], brown_mat[1:n,])
+C4_dist_green <- euclidean_distance(C4_RGB[1:n,], green_mat[1:n,])
+
+C4_colour <- ifelse(C4_dist_brown > C4_dist_green, "green", "brown")
+
+# Print the categories
+
+C4_brown <- calculate_category_percentage(C4_colour, "brown")
+
+
+EC1_RGB <- as.matrix(EC1_RGB)
+n <- nrow(EC1_RGB)
+EC1_dist_brown <- euclidean_distance(EC1_RGB[1:n,], brown_mat[1:n,])
+EC1_dist_green <- euclidean_distance(EC1_RGB[1:n,], green_mat[1:n,])
+
+EC1_colour <- ifelse(EC1_dist_brown > EC1_dist_green, "green", "brown")
+
+# Print the categories
+
+EC1_brown <- calculate_category_percentage(EC1_colour, "brown")
+
+
+
+EC2_RGB <- as.matrix(EC2_RGB)
+n <- nrow(EC2_RGB)
+EC2_dist_brown <- euclidean_distance(EC2_RGB[1:n,], brown_mat[1:n,])
+EC2_dist_green <- euclidean_distance(EC2_RGB[1:n,], green_mat[1:n,])
+
+EC2_colour <- ifelse(EC2_dist_brown > EC2_dist_green, "green", "brown")
+
+# Print the categories
+
+EC2_brown <- calculate_category_percentage(EC2_colour, "brown")
+
+
+EC3_RGB <- as.matrix(EC3_RGB)
+n <- nrow(EC3_RGB)
+EC3_dist_brown <- euclidean_distance(EC3_RGB[1:n,], brown_mat[1:n,])
+EC3_dist_green <- euclidean_distance(EC3_RGB[1:n,], green_mat[1:n,])
+
+EC3_colour <- ifelse(EC3_dist_brown > EC3_dist_green, "green", "brown")
+
+# Print the categories
+
+EC3_brown <- calculate_category_percentage(EC3_colour, "brown")
+
+EC4_RGB <- as.matrix(EC4_RGB)
+n <- nrow(EC4_RGB)
+EC4_dist_brown <- euclidean_distance(EC4_RGB[1:n,], brown_mat[1:n,])
+EC4_dist_green <- euclidean_distance(EC4_RGB[1:n,], green_mat[1:n,])
+
+EC4_colour <- ifelse(EC4_dist_brown > EC4_dist_green, "green", "brown")
+
+# Print the categories
+
+EC4_brown <- calculate_category_percentage(EC4_colour, "brown")
+
+
+
+
+
+
+
+
+
+
+#mfc
+
+
+MFC1_RGB <- as.matrix(MFC1_RGB)
+n <- nrow(MFC1_RGB)
+MFC1_dist_brown <- euclidean_distance(MFC1_RGB[1:n,], brown_mat[1:n,])
+MFC1_dist_green <- euclidean_distance(MFC1_RGB[1:n,], green_mat[1:n,])
+
+MFC1_colour <- ifelse(MFC1_dist_brown > MFC1_dist_green, "green", "brown")
+
+# Print the categories
+
+MFC1_brown <- calculate_category_percentage(MFC1_colour, "brown")
+
+MFC3_RGB <- as.matrix(MFC3_RGB)
+n <- nrow(MFC3_RGB)
+MFC3_dist_brown <- euclidean_distance(MFC3_RGB[1:n,], brown_mat[1:n,])
+MFC3_dist_green <- euclidean_distance(MFC3_RGB[1:n,], green_mat[1:n,])
+
+MFC3_colour <- ifelse(MFC3_dist_brown > MFC3_dist_green, "green", "brown")
+
+# Print the categories
+
+MFC3_brown <- calculate_category_percentage(MFC3_colour, "brown")
+
+
+
+```
+
+
+```{r}
+brown_percent_C<- c(C1_brown, C2_brown, C3_brown, C4_brown)
+brown_percent_EC<- c(EC1_brown, EC2_brown, EC3_brown, EC4_brown)
+brown_percent_EV<- c(EV1_brown, EV2_brown, EV3_brown, EV4_brown)
+brown_percent_MFC <-c(MFC1_brown, MFC3_brown)
+
+
+brown_percent <- data.frame(brown_percent_C, brown_percent_EV, brown_percent_EC,brown_percent_MFC)
+
+
+long_data_brown <- pivot_longer(data = brown_percent, 
+                          cols = c(brown_percent_C, brown_percent_EV, brown_percent_EC,brown_percent_MFC), 
+                          names_to = "Treatment", 
+                          values_to = "percentage")
+
+
+browm_sum <- data_summary(long_data_brown, varname = "percentage", groupnames = c("Treatment"))
+
+
+
+```
+
+
+```{r}
+
+
+
+brown_box <- ggplot(long_data_brown, aes(x=Treatment, y=percentage , fill = Treatment)) + 
+   labs(x= "Cell Treatment", y= "Percentage of total leaf area showing brown colouration") + 
+scale_fill_discrete(name = "Legend", labels = c("Control", "Electrode Control", "External Voltage","MFC"))+
+   geom_errorbar(data = browm_sum, aes(ymin = min, ymax = max), width=.2,
+                 position=position_dodge(.9),stat = "identity")+
+  geom_boxplot() +
+  theme(legend.text = element_text(size = 16),
+        legend.title = element_text(size = 18),
+        axis.title = element_text(size = 14))
+
+brown_box
+#wet mass
+kruskal.test(percentage ~ Treatment, data = long_data_brown)
+```
+
+
+
+
+
+
+
